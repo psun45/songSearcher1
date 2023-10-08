@@ -42,17 +42,26 @@ public interface FrontendInterface {
    * 
    * @return String filePath The file path of the loaded file.
    */
-  public String loadFile();
+  public static String loadFile() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
   /**
    * Prompts the user for a danceability score and lists all songs with the specified score.
    */
-  public void listSongs();
+  public static void listSongs() {
+    // TODO Auto-generated method stub
+    
+  }
 
   /**
    * Shows the average danceability score in the loaded dataset.
    */
-  public void showAvgScore();
+  public static void showAvgScore() {
+    // TODO Auto-generated method stub
+    
+  }
 
   /**
    * Exits the Song Searcher app.
