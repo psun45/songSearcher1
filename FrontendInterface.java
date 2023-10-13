@@ -32,12 +32,6 @@ public interface FrontendInterface {
   // public IndividualFrontendInterface (BackendInterface backend, Scanner userInput);
 
   /**
-   * Starts the main command loop for the user by prompting user to select a command. The command
-   * loop is broken down into separate sub menu methods below this method.
-   */
-  public void mainLoop();
-
-  /**
    * Prompts the user to specify which data file to load and loads the file.
    * 
    * @return String filePath The file path of the loaded file.
@@ -66,7 +60,8 @@ public interface FrontendInterface {
   /**
    * Exits the Song Searcher app.
    */
-  public void exit();
+  public static void exit() {
+  }
 
   /**
    * Prints an invalid input message to the console.
@@ -74,5 +69,16 @@ public interface FrontendInterface {
    * @param message The message to be printed for invalid input.
    */
   public void invalidInput(String message);
+  
+  
+  
+  /**
+   * Starts the main command loop for the user by prompting user to select a command. The command
+   * loop is broken down into separate sub menu methods below this method.
+   */
+  public static void mainLoop() {
+    System.out.println("Welcome to the Song Searcher app!!!");
+    
+  };
 
 }

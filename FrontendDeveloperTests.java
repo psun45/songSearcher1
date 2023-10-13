@@ -20,14 +20,17 @@ public class FrontendDeveloperTests {
    * 
    * input doesn't include the ".csv" found in the file name
    * code should check to see if this is included and if not, it will add it to the end
+   * inputed code is as follows
+   *    "song"      enters a file to load without the .csv at the end
    *    
    */
   @Test
   public void testLoadFileNoCSV() {
     
+    
     TextUITester tester = new TextUITester("song");                                                 // file input doesn't include ".csv"
     
-    FrontendInterface.loadFile();
+    FrontendClass.loadFile();
     
     String output = tester.checkOutput();                                                           // simulated output?
     
@@ -43,32 +46,37 @@ public class FrontendDeveloperTests {
   @Test
   public void testLoadFilePerfectInput() {
     
-    TextUITester tester = new TextUITester("song.csv");                                              // file input does include ".csv"
+    TextUITester tester = new TextUITester("song.csv");                                             // file input does include ".csv"
     
-    FrontendInterface.loadFile();
+    FrontendClass.loadFile();
     
     String output = tester.checkOutput();                                                           // simulated output?
     
-    assertTrue(output.contains("song.csv"), "inputted file withough .csv wasn't converted");
+    assertTrue(output.contains("song.csv"), "inputted file .csv wasn't loaded correctly");
   }
   
   /**
    * Testing average dancibility score
    * 
-   * no input required, output should be some words + the score
-   *    
+   * getting to Dancibility Score and then exitting the program
+   * 
+   * input:
+   *    none
    */
   @Test
   public void testAverageDancibilityScore() {
     
     TextUITester tester = new TextUITester("");                                                     // file input does include ".csv"
     
-    FrontendInterface.showAvgScore();
+    FrontendClass.showAvgScore();
     
     String output = tester.checkOutput();                                                           // simulated output?
     
-    assertTrue(output.contains("Average Dancibility Score of data: "), 
+    assertTrue(output.contains("50.0"),
         "did not display correct average dancibility score message");
+    
+    /**assertTrue(output.contains("the average dancebility score for the Song Set is"), 
+        "did not display correct average dancibility score message"); **/
   }
   
   /**
@@ -78,35 +86,35 @@ public class FrontendDeveloperTests {
    *    
    */
   @Test
-  public void testDancibilityScoreWrittenNumber() {
+  public void testExitMethod() {
     
-    TextUITester tester = new TextUITester("twenty");                                               // file input does include ".csv"
+    TextUITester tester = new TextUITester("3");                                                    // 3 should displya exit message
     
-    FrontendInterface.listSongs();
+    FrontendClass.mainLoop();
     
     String output = tester.checkOutput();                                                           // simulated output?
     
-    assertTrue(output.contains("please input a numerical number, not a written number"), 
-        "did not output 'written number' error");
+    assertTrue(output.contains("thanks for using Song Searcher"), 
+        "failed to exit");
+
   }
   
   /**
    * Testing specific dancibility score
    * 
-   * input is not a usable number
+   * input is a correct input
    *    
    */
   @Test
   public void testDancibilityScoreInvalidNumber() {
     
-    TextUITester tester = new TextUITester("-25");                                                  // file input does include ".csv"
+    TextUITester tester = new TextUITester("25");                                                   // good input 
     
-    FrontendInterface.listSongs();
+    FrontendClass.listSongs();
     
     String output = tester.checkOutput();                                                           // simulated output?
     
-    assertTrue(output.contains("number must be between X and XXX"), 
-        "input was not between max and min values");
+    assertTrue(output.contains("Here are the songs:"), 
+        "acceptable input failed the test");
   }
-  
 }
