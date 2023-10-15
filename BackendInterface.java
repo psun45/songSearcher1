@@ -13,7 +13,7 @@
 // Online Sources: NONE
 //
 ///////////////////////////////////////////////////////////////////////////////
-import java.util.List;
+import java.io.IOException;
 
 /**
  * Define an interface for the Backend functionality which reads data from a file,
@@ -23,7 +23,7 @@ import java.util.List;
 public interface BackendInterface extends IterableMultiKeySortedCollectionInterface {
         /**
          * Constructs a BackendConstructor instance with an initial list of songs.
-         * Constructor: public BackendConstructor(List<Song> songList)
+         * Constructor: public BackendConstructor(List<Song> songList) extends IterableMultiKeySortedCollection
          * @param songList The initial list of songs to populate the backend.
          */
 
@@ -31,20 +31,21 @@ public interface BackendInterface extends IterableMultiKeySortedCollectionInterf
          * method that reads data from file
          * @param filePath
          */
-        void dataFromFileReader(String filePath);
+        void dataFromFileReader(String filePath) throws IOException;
         /**
          * Calculates and returns the average danceability score of all songs in the backend.
          * @param songList
          * @return The average danceability score.
          */
-        double calculateAverageDanceabilityScore(List<Song> songList);
+        double calculateAverageDanceabilityScore(BackendIterableMultiKeySortedCollection<Song> songList);
 
         /**
          * Getter method for list of songs above dancability threshold
          * @param threshold
          * @return List of songs above dancability Threshold
          */
-        List<Song> getSongsAboveDanceabilityThreshold(List<Song> songList, double threshold);
+        BackendIterableMultiKeySortedCollection<Song> getSongsAboveDanceabilityThreshold
+        (BackendIterableMultiKeySortedCollection<Song> songList, double threshold);
 
 
 }
