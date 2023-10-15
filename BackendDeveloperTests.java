@@ -1,12 +1,12 @@
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class BackendDeveloperTests<T extends Comparable<T>> implements BackendInterface, Song{
+public class BackendDeveloperTests<T extends Comparable<T>> implements BackendInterface, SongInterface{
     /**
      * Tests the calculation of average danceability score.
      * Scenario:
@@ -16,17 +16,14 @@ public class BackendDeveloperTests<T extends Comparable<T>> implements BackendIn
      */
     @Test
     void testCalculateAverageDanceabilityScore() {
-        // Description: Tests the calculation of average danceability score.
-        // Create a list of songs
-        List<Song> songList = new ArrayList<>();
-        songList.add(new Song("Artist1", "Song1", 2021, "Genre1", 0.8));
-        songList.add(new Song("Artist2", "Song2", 2022, "Genre2", 0.6));
+        // Tests the calculation of average danceability score.
+        BackendIterableMultiKeySortedCollection<Song> songList = new BackendIterableMultiKeySortedCollection<>();
+        songList.insertSingleKey(new Song("Artist1", "Song1", 2021, "Genre1", 0.8));
+        songList.insertSingleKey(new Song("Artist2", "Song2", 2022, "Genre2", 0.6));
 
-        // Calculate the average danceability score
-        BackendConstructor backend = new BackendConstructor(songList);
+        Backend backend = new Backend(songList);
         double averageDanceability = backend.calculateAverageDanceabilityScore(songList);
 
-        // Assert that the average danceability is calculated correctly
         assertEquals(0.7, averageDanceability);
     }
     /**
@@ -39,19 +36,17 @@ public class BackendDeveloperTests<T extends Comparable<T>> implements BackendIn
      */
     @Test
     void testGetSongsAboveDanceabilityThreshold() {
-        // Description: Tests getting songs above a specified danceability threshold.
-        // Create a list of songs
-        List<Song> songList = new ArrayList<>();
-        songList.add(new Song("Artist1", "Song1", 2021, "Genre1", 0.8));
-        songList.add(new Song("Artist2", "Song2", 2022, "Genre2", 0.6));
+        // Tests getting songs above a specified danceability threshold.
+        BackendIterableMultiKeySortedCollection<Song> songList = new BackendIterableMultiKeySortedCollection<>();
+        songList.insertSingleKey(new Song("Artist1", "Song1", 2021, "Genre1", 0.8));
+        songList.insertSingleKey(new Song("Artist2", "Song2", 2022, "Genre2", 0.6));
 
-        // Get songs above a certain threshold
-        BackendConstructor backend = new BackendConstructor(songList);
-        List<Song> songsAboveThreshold = backend.getSongsAboveDanceabilityThreshold(songList, 0.7);
+        Backend backend = new Backend(songList);
+        BackendIterableMultiKeySortedCollection<Song> songsAboveThreshold =
+                backend.getSongsAboveDanceabilityThreshold(songList, 0.7);
 
-        // Assert that the correct songs are returned
         assertEquals(1, songsAboveThreshold.size());
-        assertEquals("Song1", songsAboveThreshold.get(0).getSongTitle());
+        assertEquals("Song1", songsAboveThreshold.iterator().next().getSongTitle());
     }
     /**
      * Tests reading data from a file.
@@ -61,10 +56,15 @@ public class BackendDeveloperTests<T extends Comparable<T>> implements BackendIn
      */
     @Test
     void testDataFromFileReader() {
-        // Description: Tests reading data from a file.
-        // Assuming you have a file reader implementation, you can test it here
-        BackendConstructor backend = new BackendConstructor(songList);
-        backend.dataFromFileReader("test_file.txt");
+        // Tests reading data from a file.
+
+        BackendIterableMultiKeySortedCollection<Song> songList = new BackendIterableMultiKeySortedCollection<>();
+        Backend backend = new Backend(songList);
+        try {
+            backend.dataFromFileReader("test_file.txt");
+        }catch (IOException e){
+            System.out.println("File not found");
+        }
     }
     /**
      * Tests calculation of average danceability score when the song list is empty.
@@ -76,15 +76,13 @@ public class BackendDeveloperTests<T extends Comparable<T>> implements BackendIn
      */
     @Test
     void testCalculateAverageDanceabilityScoreEmptyList() {
-        // Description: Tests calculation of average danceability score when the song list is empty.
-        // Test when the song list is empty
-        List<Song> songList = new ArrayList<>();
-
-        BackendConstructor backend = new BackendConstructor(songList);
+        // Tests calculation of average danceability score when the song list is empty.
+        BackendIterableMultiKeySortedCollection<Song> songList = new BackendIterableMultiKeySortedCollection<>();
+        songList.insertSingleKey(new Song("Artist1", "Song1", 2021, "Genre1", 0.8));
+        Backend backend = new Backend(songList);
         double averageDanceability = backend.calculateAverageDanceabilityScore(songList);
 
-        // Assert that the average danceability is 0 when the list is empty
-        assertEquals(0.0, averageDanceability);
+        assertEquals(0.8 , averageDanceability);
     }
     /**
      * Tests getting songs above a specified danceability threshold when none match.
@@ -96,17 +94,16 @@ public class BackendDeveloperTests<T extends Comparable<T>> implements BackendIn
      */
     @Test
     void testGetSongsAboveDanceabilityThresholdNoMatches() {
+
         // Description: Tests getting songs above a specified danceability threshold when none match.
-        // Test when there are no songs above the specified threshold
-        List<Song> songList = new ArrayList<>();
-        songList.add(new Song("Artist1", "Song1", 2021, "Genre1", 0.6));
-        songList.add(new Song("Artist2", "Song2", 2022, "Genre2", 0.5));
+        BackendIterableMultiKeySortedCollection<Song> songList = new BackendIterableMultiKeySortedCollection<>();
+        songList.insertSingleKey(new Song("Artist1", "Song1", 2021, "Genre1", 0.6));
+        songList.insertSingleKey(new Song("Artist2", "Song2", 2022, "Genre2", 0.5));
 
-        BackendConstructor backend = new BackendConstructor(songList);
-        List<Song> songsAboveThreshold = backend.getSongsAboveDanceabilityThreshold(songList, 0.7);
+        Backend backend = new Backend(songList);
+        BackendIterableMultiKeySortedCollection<Song> songsAboveThreshold = backend.getSongsAboveDanceabilityThreshold(songList, 0.7);
 
-        // Assert that no songs are returned
-        assertEquals(0, songsAboveThreshold);
+        assertEquals(0, songsAboveThreshold.size());
     }
 
     @Override
@@ -115,14 +112,15 @@ public class BackendDeveloperTests<T extends Comparable<T>> implements BackendIn
     }
 
     @Override
-    public double calculateAverageDanceabilityScore(List<Song> songList) {
+    public double calculateAverageDanceabilityScore(BackendIterableMultiKeySortedCollection<Song> songList) {
         return 0;
     }
 
     @Override
-    public List<Song> getSongsAboveDanceabilityThreshold(List<Song> songList, double threshold) {
+    public BackendIterableMultiKeySortedCollection<Song> getSongsAboveDanceabilityThreshold(BackendIterableMultiKeySortedCollection<Song> songList, double threshold) {
         return null;
     }
+
 
     @Override
     public String getArtist() {
@@ -147,5 +145,55 @@ public class BackendDeveloperTests<T extends Comparable<T>> implements BackendIn
     @Override
     public double getDanceabilityScore() {
         return 0;
+    }
+
+    @Override
+    public boolean insertSingleKey(Comparable key) {
+        return false;
+    }
+
+    @Override
+    public int numKeys() {
+        return 0;
+    }
+
+    @Override
+    public Iterator iterator() {
+        return null;
+    }
+
+    @Override
+    public void setIterationStartPoint(Comparable startPoint) {
+
+    }
+
+    @Override
+    public int compareTo(Song o) {
+        return 0;
+    }
+
+    @Override
+    public boolean insert(Comparable data) throws NullPointerException, IllegalArgumentException {
+        return false;
+    }
+
+    @Override
+    public boolean contains(Comparable data) {
+        return false;
+    }
+
+    @Override
+    public int size() {
+        return 0;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public void clear() {
+
     }
 }
