@@ -106,6 +106,46 @@ public class BackendDeveloperTests<T extends Comparable<T>> implements BackendIn
         assertEquals(0, songsAboveThreshold.size());
     }
 
+    private BackendInterface backend = new Backend(new BackendIterableMultiKeySortedCollection<>());
+    private FrontendInterface frontend = new Frontend(backend); // creating frontend class with the backend as a
+    // parameter
+    /**
+     * Verifies that the frontend is able to load a file and return the correct file path.
+     * This test creates an instance of the Frontend with a Backend and calls the loadFile method.
+     * It then asserts that the returned file path is not null and ends with ".txt".
+     */
+    @Test
+    void integrationTestLoadFile() {
+        // Integration test to verify loading a file
+        String filePath = frontend.loadFile();
+
+        assertTrue(filePath != null);
+        assertTrue(filePath.endsWith(".txt"));
+    }
+    /**
+     * Verifies that the frontend correctly calculates the average danceability score.
+     * This test creates an instance of the Frontend with a Backend and adds two songs to the songList using
+     * the frontend's listSongs() method. It then calls the showAvgScore() method to calculate
+     * the average danceability score. The test asserts that the calculated score matches the expected value.
+     */
+    @Test
+    void integrationTestCalculateAverageDanceabilityScore() {
+        // Integration test to verify calculating average danceability score
+
+        // Assuming you have some songs in the backend
+        Song song1 = new Song("Song 1", "Artist 1", 120, "Genre 1", 0.75);
+        Song song2 = new Song("Song 2", "Artist 2", 130, "Genre 2", 0.80);
+        //using frontend to add the songs into the songList
+        frontend.listSongs().insert(song1);
+        frontend.listSongs().insert(song2);
+
+        // Call the method in frontend
+        double avgScore = frontend.showAvgScore();
+
+        // Verify the result
+        assertEquals(0.775, avgScore);
+    }
+
     @Override
     public void dataFromFileReader(String filePath) {
 
