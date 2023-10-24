@@ -108,13 +108,67 @@ public class FrontendDeveloperTests {
   @Test
   public void testDancibilityScoreInvalidNumber() {
     
-    TextUITester tester = new TextUITester("25");                                                   // good input 
+    TextUITester tester = new TextUITester("");                                                     // file input does include ".csv"
+    
+    FrontendClass.showAvgScore();
+    
+    String output = tester.checkOutput();                                                           // simulated output?
+    
+    assertTrue(output.contains("50.0"),
+        "did not display correct average dancibility score message");
+    
+    /**assertTrue(output.contains("the average dancebility score for the Song Set is"), 
+        "did not display correct average dancibility score message"); **/
+  }
+  
+  // P16 TESTS
+  
+  /**
+   * testing full capabilities of the app with different input
+   * 
+   * input is a correct input
+   *    
+   */
+  @Test
+  public void testFullMainLoop01() {
+    
+    TextUITester tester = new TextUITester("0"
+        + "/n"
+        + "song.csv"
+        + "1"
+        + "3");                                                                                     // good input 
     
     FrontendClass.listSongs();
     
     String output = tester.checkOutput();                                                           // simulated output?
     
-    assertTrue(output.contains("Here are the songs:"), 
-        "acceptable input failed the test");
+    assertTrue(output.contains("the average dancebility score for the Song Set is"), 
+        "did not get to the right point in the app");
   }
+  
+  
+  /**
+   * testing full capabilities of the app with different input
+   * 
+   * input is a correct input
+   *    
+   */
+  @Test
+  public void testFullMainLoop02() {
+    
+    TextUITester tester = new TextUITester("0"
+        + "/n"
+        + "song.csv"
+        + "2"
+        + "3");                                                                                     // good input 
+    
+    FrontendClass.listSongs();
+    
+    String output = tester.checkOutput();                                                           // simulated output?
+    
+    assertTrue(output.contains("Here are the songs: "), 
+        "did not get to the right point in the app");
+  }
+  
+  
 }
