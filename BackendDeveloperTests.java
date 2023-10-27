@@ -113,7 +113,7 @@ public class BackendDeveloperTests<T extends Comparable<T>> {
 
         frontend.loadFile();
         Backend backend = new Backend();
-        String filePath = "\"C:\\\\Users\\\\psun4\\\\IdeaProjects\\\\untitled\\\\src\\\\songs.csv\""
+        String filePath = "\"C:\\\\Users\\\\psun4\\\\IdeaProjects\\\\untitled\\\\src\\\\songs.csv\"";
 
         assertTrue(filePath != null);
         assertTrue(filePath.endsWith(".txt"));

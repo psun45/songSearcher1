@@ -14,6 +14,7 @@ Untracked files:
 	[31mlog[m
 
 nothing added to commit but untracked files present (use "git add" to track)
+<<<<<<< HEAD
 ]0;psun45@my-cs400-vm: ~/p11/p1[01;32mpsun45@my-cs400-vm[00m:[01;34m~/p11/p1[00m$ git log -1
 [?1h=[33mcommit b44c3fa7de52aa127c3a78ef54e518920b41bc06[m[33m ([m[1;36mHEAD -> [m[1;32mbackend[m[33m)[m[m
 Author: Patrick Sun <psun45@wisc.edu>[m

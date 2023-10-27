@@ -32,38 +32,48 @@ public interface FrontendInterface {
   // public IndividualFrontendInterface (BackendInterface backend, Scanner userInput);
 
   /**
-   * Starts the main command loop for the user by prompting user to select a command. The command
-   * loop is broken down into separate sub menu methods below this method.
-   */
-  public void mainLoop();
-
-  /**
    * Prompts the user to specify which data file to load and loads the file.
    * 
    * @return String filePath The file path of the loaded file.
    */
-  public String loadFile();
+  public static String loadFile() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
   /**
    * Prompts the user for a danceability score and lists all songs with the specified score.
    */
-  public void listSongs();
+  public static void listSongs() {
+    // TODO Auto-generated method stub
+    
+  }
 
   /**
    * Shows the average danceability score in the loaded dataset.
    */
-  public void showAvgScore();
+  public static void showAvgScore() {
+    // TODO Auto-generated method stub
+    
+  }
 
   /**
    * Exits the Song Searcher app.
    */
-  public void exit();
+  public static void exit() {
+  }
 
   /**
    * Prints an invalid input message to the console.
-   * 
    * @param message The message to be printed for invalid input.
    */
   public void invalidInput(String message);
+
+  /**
+   * Starts the main command loop for the user by prompting user to select a command. The command
+   * loop is broken down into separate sub menu methods below this method.
+   */
+  public static void mainLoop(){
+}
 
 }
