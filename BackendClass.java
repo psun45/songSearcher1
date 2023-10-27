@@ -32,7 +32,7 @@ public class BackendClass implements BackendInterface {
      */
     @Override
     public IterableMultiKeyRBT<Song> dataFromFileReader(String fileName) throws IOException {
-        String filePath = fileName;
+        String filePath ="." + File.separator + fileName;
         List<String> lines = Files.readAllLines(Paths.get(filePath));
         for (int i = 1; i < lines.size(); i++) {  // starting from 1 to skip the header
             try {

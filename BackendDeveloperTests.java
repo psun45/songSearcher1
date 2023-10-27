@@ -127,13 +127,21 @@ public class BackendDeveloperTests<T extends Comparable<T>> {
      * Any IO exception during the process will cause the test to fail.
      */
     @Test
-    public void IntegrationtestLoadFile() throws IOException {
+    public void IntegrationtestLoadFile() {
         TextUITester tester = new TextUITester("songs.csv"); // Simulate user input for loading "songs.csv"
         FrontendClass frontend = new FrontendClass();
-        frontend.loadFile();
+        try {
+            frontend.loadFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         IterableMultiKeyRBT<Song> songList = new IterableMultiKeyRBT<>();
         BackendClass backend = new BackendClass(songList);
-        backend.dataFromFileReader("songs.csv");
+        try {
+            backend.dataFromFileReader("songs.csv");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         String output = tester.checkOutput();
         assertTrue(output.contains("successfully"));
         assertTrue(songList != null); // Assert that songs were loaded
@@ -149,13 +157,17 @@ public class BackendDeveloperTests<T extends Comparable<T>> {
      * @throws IOException if there's an error reading the "songs.csv" file.
      */
     @Test
-    public void IntegrationtestListSongs() throws IOException {
+    public void IntegrationtestListSongs() {
         TextUITester tester = new TextUITester("2\nsongs.csv\n3\n"); // Simulate user input for loading "songs.csv"
         FrontendClass frontend = new FrontendClass();
         frontend.showAvgScore();
         IterableMultiKeyRBT<Song> songList = new IterableMultiKeyRBT<>();
         BackendClass backend = new BackendClass(songList);
-        backend.dataFromFileReader("songs.csv");
+        try {
+            backend.dataFromFileReader("songs.csv");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         Iterator<Song> iterator = songList.iterator();
         double totalDanceability = 0.0;
         int count = 0;
@@ -172,24 +184,13 @@ public class BackendDeveloperTests<T extends Comparable<T>> {
         assertTrue(output.contains("the average dancebility score for the Song Set is"));
 
     }
-    /**
-     * Tests the behavior of the mainLoop() method, especially when loading a file.
-     * This test simulates loading a file ("songs.csv") and checks if the appropriate success message is printed.
-     */
-    @Test
-    public void testFrontendLoadFile() throws IOException {
-        TextUITester tester = new TextUITester("songs.csv"); // Simulate user input for loading "songs.csv"
-        FrontendClass frontend = new FrontendClass();
-        frontend.loadFile();
-        String output = tester.checkOutput();
-                assertTrue(output.contains("successfully"));
-    }
+   
     /**
      * Tests the behavior of the showAvgScore() method.
      * This test simulates a user action to check the average danceability score of the song set and verifies the output message.
      */
     @Test
-    public void testFrontendShowAvg() throws IOException {
+    public void testFrontendShowAvg() {
         // The input simulates user choice for loading file, then showing average, and then quitting.
         TextUITester tester = new TextUITester("songs.csv");
         FrontendClass frontend = new FrontendClass();
@@ -197,6 +198,23 @@ public class BackendDeveloperTests<T extends Comparable<T>> {
         String output = tester.checkOutput();
         // Adjust the expected output string based on your implementation details.
         assertTrue(output.contains("the average dancebility score for the Song Set is"));
+    }
+
+    /**
+     * Tests the behavior of the mainLoop() method, especially when loading a file.
+     * This test simulates loading a file ("songs.csv") and checks if the appropriate success message is printed.
+     */
+    @Test
+    public void testFrontendLoadFile() {
+        TextUITester tester = new TextUITester("songs.csv"); // Simulate user input for loading "songs.csv"
+        FrontendClass frontend = new FrontendClass();
+        try {
+            frontend.loadFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        String output = tester.checkOutput();
+                assertTrue(output.contains("successfully"));
     }
 
 }
