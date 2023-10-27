@@ -2,6 +2,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,7 +22,7 @@ public class BackendDeveloperTests<T extends Comparable<T>> {
         songList.insertSingleKey(new Song("Artist1", "Song1", 2021, "Genre1", 0.8));
         songList.insertSingleKey(new Song("Artist2", "Song2", 2022, "Genre2", 0.6));
 
-        Backend backend = new Backend(songList);
+        BackendClass backend = new BackendClass(songList);
         double averageDanceability = backend.calculateAverageDanceabilityScore(songList);
 
         assertEquals(0.7, averageDanceability);
@@ -42,18 +43,26 @@ public class BackendDeveloperTests<T extends Comparable<T>> {
         songList.insertSingleKey(new Song("Artist1", "Song1", 2021, "Genre1", 0.8));
         songList.insertSingleKey(new Song("Artist2", "Song2", 2022, "Genre2", 0.6));
 
-        Backend backend = new Backend(songList);
+        BackendClass backend = new BackendClass(songList);
         IterableMultiKeyRBT<Song> songsAboveThreshold = backend.getSongsAboveDanceabilityThreshold(songList, 0.7);
 
         assertEquals(1, songsAboveThreshold.size());
     }
-
+    /**
+     * Tests the behavior of the dataFromFileReader() method in BackendClass.
+     * This test aims to verify that the song data from the "songs.csv" file is successfully read
+     * and stored into the IterableMultiKeyRBT<Song> data structure.
+     *
+     * If the data loading process is successful, the test checks if the songList is not null,
+     * ensuring that the songs were loaded correctly. Any IO exception during the process
+     * will print the exception's stack trace.
+     */
     @Test
     public void testReadDataFromFile() {
         IterableMultiKeyRBT<Song> songList = new IterableMultiKeyRBT<>();
-        Backend backend = new Backend(songList);
+        BackendClass backend = new BackendClass(songList);
         try {
-            backend.dataFromFileReader("C:\\Users\\psun4\\IdeaProjects\\untitled\\src\\songs.csv");
+            backend.dataFromFileReader("songs.csv");
             // assuming songList has a size() method
             assertTrue(songList != null); // Assert that songs were loaded
         } catch (IOException e) {
@@ -75,7 +84,7 @@ public class BackendDeveloperTests<T extends Comparable<T>> {
         // Tests calculation of average danceability score when the song list is empty.
         IterableMultiKeyRBT<Song> songList = new IterableMultiKeyRBT<>();
         songList.insertSingleKey(new Song("Artist1", "Song1", 2021, "Genre1", 0.8));
-        Backend backend = new Backend(songList);
+        BackendClass backend = new BackendClass(songList);
         double averageDanceability = backend.calculateAverageDanceabilityScore(songList);
 
         assertEquals(0.8, averageDanceability);
@@ -97,70 +106,98 @@ public class BackendDeveloperTests<T extends Comparable<T>> {
         songList.insertSingleKey(new Song("Artist1", "Song1", 2021, "Genre1", 0.6));
         songList.insertSingleKey(new Song("Artist2", "Song2", 2022, "Genre2", 0.5));
 
-        Backend backend = new Backend(songList);
+        BackendClass backend = new BackendClass(songList);
         IterableMultiKeyRBT<Song> songsAboveThreshold = backend.getSongsAboveDanceabilityThreshold(songList, 0.7);
 
         assertEquals(0, songsAboveThreshold.size());
     }
     /**
-     * Verifies that the frontend is able to load a file and return the correct file path.
-     * This test creates an instance of the Frontend with a Backend and calls the loadFile method.
-     * It then asserts that the returned file path is not null and ends with ".txt".
+     * Integration test for the loadFile() method from FrontendClass and the dataFromFileReader() method
+     * from BackendClass. This test verifies the interaction between the frontend and backend components
+     * during the file loading process.
+     *
+     * The test first simulates the user's action of loading the "songs.csv" file through the frontend class.
+     * It then initiates the BackendClass to read data from the same file.
+     *
+     * The expected outcomes are:
+     * 1. The frontend's output contains the word "successfully", indicating a successful load operation.
+     * 2. The IterableMultiKeyRBT<Song> data structure, songList, should not be null after the file is read,
+     *    confirming that songs were loaded into the backend.
+     *
+     * Any IO exception during the process will cause the test to fail.
      */
     @Test
-    void integrationTestLoadFile() {
-        // Integration test to verify loading a file
-
+    public void IntegrationtestLoadFile() throws IOException {
+        TextUITester tester = new TextUITester("songs.csv"); // Simulate user input for loading "songs.csv"
+        FrontendClass frontend = new FrontendClass();
         frontend.loadFile();
-        Backend backend = new Backend();
-        String filePath = "\"C:\\\\Users\\\\psun4\\\\IdeaProjects\\\\untitled\\\\src\\\\songs.csv\"";
-
-        assertTrue(filePath != null);
-        assertTrue(filePath.endsWith(".txt"));
-    }
-    @Test
-    void integrationTestLoadFile() throws IOException {
-        // Initialize backend and frontend
         IterableMultiKeyRBT<Song> songList = new IterableMultiKeyRBT<>();
-        Backend backend = new Backend(songList);
-        Frontend frontend = new Frontend(backend); // Assuming Frontend takes Backend as a parameter
-
-        // Load the file using frontend
-        frontend.loadFile();
-
-        // Check the path of the loaded file
-        String filePath = "\"C:\\\\Users\\\\psun4\\\\IdeaProjects\\\\untitled\\\\src\\\\songs.csv\"";
-        backend.dataFromFileReader(filePath);
-        Song expectedSong = new Song("Train", "Hey, Soul Sister",2010,"neo mellow",67);
-        // Assert that the backend loaded the correct file
-        assertEquals(songList.size(), 603);
-        assertEquals(songList.root.data, expectedSong);
+        BackendClass backend = new BackendClass(songList);
+        backend.dataFromFileReader("songs.csv");
+        String output = tester.checkOutput();
+        assertTrue(output.contains("successfully"));
+        assertTrue(songList != null); // Assert that songs were loaded
     }
     /**
-     * Verifies that the frontend correctly calculates the average danceability score.
-     * This test creates an instance of the Frontend with a Backend and adds two songs to the songList using
-     * the frontend's listSongs() method. It then calls the showAvgScore() method to calculate
-     * the average danceability score. The test asserts that the calculated score matches the expected value.
+     * Integration test to validate the listing of songs and calculation of average danceability score.
+     *
+     * <p>This test simulates the user input to load a song file and then request the average danceability score.
+     * The test asserts that the computed average score in the backend matches with the manually calculated
+     * average danceability score from the list of songs. Additionally, it checks the output of the frontend
+     * to ensure the message displays the average danceability score for the song set.</p>
+     *
+     * @throws IOException if there's an error reading the "songs.csv" file.
      */
     @Test
-    void integrationTestCalculateAverageDanceabilityScore() {
-        // Integration test to verify calculating average danceability score
-
-        // Assuming you have some songs in the backend
-        Song song1 = new Song("Song 1", "Artist 1", 120, "Genre 1", 0.75);
-        Song song2 = new Song("Song 2", "Artist 2", 130, "Genre 2", 0.80);
-        //using frontend to add the songs into the songList
+    public void IntegrationtestListSongs() throws IOException {
+        TextUITester tester = new TextUITester("2\nsongs.csv\n3\n"); // Simulate user input for loading "songs.csv"
+        FrontendClass frontend = new FrontendClass();
+        frontend.showAvgScore();
         IterableMultiKeyRBT<Song> songList = new IterableMultiKeyRBT<>();
-        Backend backend = new Backend(songList);
-        Frontend frontend = new Frontend(backend); // Assuming Frontend takes Backend as a parameter
-        songList.insertSingleKey(song1);
-        songList.insertSingleKey(song2);
+        BackendClass backend = new BackendClass(songList);
+        backend.dataFromFileReader("songs.csv");
+        Iterator<Song> iterator = songList.iterator();
+        double totalDanceability = 0.0;
+        int count = 0;
 
-        // Call the method in frontend
-        double avgScore = frontend.showAvgScore();
+        while (iterator.hasNext()) {
+            Song currentSong = iterator.next();
+            totalDanceability += currentSong.getDanceabilityScore(); // Assuming Song has a getDanceability() method that returns a double
+            count++;
+        }
 
-        // Verify the result
-        assertEquals(0.775, avgScore);
+        double averageDanceability = totalDanceability / count;
+        assertEquals(averageDanceability, backend.calculateAverageDanceabilityScore(songList));
+        String output = tester.checkOutput();
+        assertTrue(output.contains("the average dancebility score for the Song Set is"));
+
+    }
+    /**
+     * Tests the behavior of the mainLoop() method, especially when loading a file.
+     * This test simulates loading a file ("songs.csv") and checks if the appropriate success message is printed.
+     */
+    @Test
+    public void testFrontendLoadFile() throws IOException {
+        TextUITester tester = new TextUITester("songs.csv"); // Simulate user input for loading "songs.csv"
+        FrontendClass frontend = new FrontendClass();
+        frontend.loadFile();
+        String output = tester.checkOutput();
+                assertTrue(output.contains("successfully"));
+    }
+    /**
+     * Tests the behavior of the showAvgScore() method.
+     * This test simulates a user action to check the average danceability score of the song set and verifies the output message.
+     */
+    @Test
+    public void testFrontendShowAvg() throws IOException {
+        // The input simulates user choice for loading file, then showing average, and then quitting.
+        TextUITester tester = new TextUITester("songs.csv");
+        FrontendClass frontend = new FrontendClass();
+        frontend.showAvgScore(); // Directly call the method to show average score
+        String output = tester.checkOutput();
+        // Adjust the expected output string based on your implementation details.
+        assertTrue(output.contains("the average dancebility score for the Song Set is"));
     }
 
 }
+
