@@ -32,8 +32,9 @@ public interface BackendInterface{
      * method that reads data from file
      *
      * @param filePath
+     * @return
      */
-    void dataFromFileReader(String filePath) throws IOException;
+    IterableMultiKeyRBT<Song> dataFromFileReader(String filePath) throws IOException;
 
     /**
      * Calculates and returns the average danceability score of all songs in the backend.
