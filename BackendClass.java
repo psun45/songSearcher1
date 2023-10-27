@@ -33,17 +33,7 @@ public class BackendClass implements BackendInterface {
     @Override
     public IterableMultiKeyRBT<Song> dataFromFileReader(String fileName) throws IOException {
         String filePath = fileName;
-        filePath = fileName;
-        // List<String> lines = Files.readAllLines(Paths.get(filePath));
-        File file = new File(filePath);
-        Scanner scanner = new Scanner(file);
-        List<String> lines = new ArrayList<>();
-
-        while (scanner.hasNextLine()) {
-            lines.add(scanner.nextLine());
-        }
-
-        scanner.close();
+        List<String> lines = Files.readAllLines(Paths.get(filePath));
         for (int i = 1; i < lines.size(); i++) {  // starting from 1 to skip the header
             try {
                 // Check if the line starts with a quote, indicating that the title is in quotes

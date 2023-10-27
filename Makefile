@@ -8,9 +8,7 @@ runFDTests: FrontendDeveloperTests.class
 
 FrontendDeveloperTests.class:
 	javac -cp ../junit5.jar: FrontendDeveloperTests.java
-
 compileFiles: *.java
 	javac *.java
-
 clean:
 	rm -rf *.class
