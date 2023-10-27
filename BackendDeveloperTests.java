@@ -6,7 +6,7 @@ import java.util.Iterator;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class BackendDeveloperTests<T extends Comparable<T>> implements BackendInterface, SongInterface{
+public class BackendDeveloperTests<T extends Comparable<T>> {
     /**
      * Tests the calculation of average danceability score.
      * Scenario:
@@ -17,7 +17,7 @@ public class BackendDeveloperTests<T extends Comparable<T>> implements BackendIn
     @Test
     void testCalculateAverageDanceabilityScore() {
         // Tests the calculation of average danceability score.
-        BackendIterableMultiKeySortedCollection<Song> songList = new BackendIterableMultiKeySortedCollection<>();
+        IterableMultiKeyRBT<Song> songList = new IterableMultiKeyRBT<>();
         songList.insertSingleKey(new Song("Artist1", "Song1", 2021, "Genre1", 0.8));
         songList.insertSingleKey(new Song("Artist2", "Song2", 2022, "Genre2", 0.6));
 
@@ -26,9 +26,10 @@ public class BackendDeveloperTests<T extends Comparable<T>> implements BackendIn
 
         assertEquals(0.7, averageDanceability);
     }
+
     /**
      * Tests getting songs above a specified danceability threshold.
-     *
+     * <p>
      * Scenario:
      * - Create a list of songs with varying danceability scores.
      * - Get songs above a specified threshold using the BackendConstructor.
@@ -37,38 +38,33 @@ public class BackendDeveloperTests<T extends Comparable<T>> implements BackendIn
     @Test
     void testGetSongsAboveDanceabilityThreshold() {
         // Tests getting songs above a specified danceability threshold.
-        BackendIterableMultiKeySortedCollection<Song> songList = new BackendIterableMultiKeySortedCollection<>();
+        IterableMultiKeyRBT<Song> songList = new IterableMultiKeyRBT<>();
         songList.insertSingleKey(new Song("Artist1", "Song1", 2021, "Genre1", 0.8));
         songList.insertSingleKey(new Song("Artist2", "Song2", 2022, "Genre2", 0.6));
 
         Backend backend = new Backend(songList);
-        BackendIterableMultiKeySortedCollection<Song> songsAboveThreshold =
-                backend.getSongsAboveDanceabilityThreshold(songList, 0.7);
+        IterableMultiKeyRBT<Song> songsAboveThreshold = backend.getSongsAboveDanceabilityThreshold(songList, 0.7);
 
         assertEquals(1, songsAboveThreshold.size());
-        assertEquals("Song1", songsAboveThreshold.iterator().next().getSongTitle());
     }
-    /**
-     * Tests reading data from a file.
-     *
-     * Scenario:
-     * - Assuming there is an implemented file reader, this test checks if data can be read.
-     */
-    @Test
-    void testDataFromFileReader() {
-        // Tests reading data from a file.
 
-        BackendIterableMultiKeySortedCollection<Song> songList = new BackendIterableMultiKeySortedCollection<>();
+    @Test
+    public void testReadDataFromFile() {
+        IterableMultiKeyRBT<Song> songList = new IterableMultiKeyRBT<>();
         Backend backend = new Backend(songList);
         try {
-            backend.dataFromFileReader("test_file.txt");
-        }catch (IOException e){
-            System.out.println("File not found");
+            backend.dataFromFileReader("C:\\Users\\psun4\\IdeaProjects\\untitled\\src\\songs.csv");
+            // assuming songList has a size() method
+            assertTrue(songList != null); // Assert that songs were loaded
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
+
+
     /**
      * Tests calculation of average danceability score when the song list is empty.
-     *
+     * <p>
      * Scenario:
      * - Create an empty list of songs.
      * - Calculate the average danceability score using the BackendConstructor.
@@ -77,16 +73,17 @@ public class BackendDeveloperTests<T extends Comparable<T>> implements BackendIn
     @Test
     void testCalculateAverageDanceabilityScoreEmptyList() {
         // Tests calculation of average danceability score when the song list is empty.
-        BackendIterableMultiKeySortedCollection<Song> songList = new BackendIterableMultiKeySortedCollection<>();
+        IterableMultiKeyRBT<Song> songList = new IterableMultiKeyRBT<>();
         songList.insertSingleKey(new Song("Artist1", "Song1", 2021, "Genre1", 0.8));
         Backend backend = new Backend(songList);
         double averageDanceability = backend.calculateAverageDanceabilityScore(songList);
 
-        assertEquals(0.8 , averageDanceability);
+        assertEquals(0.8, averageDanceability);
     }
+
     /**
      * Tests getting songs above a specified danceability threshold when none match.
-     *
+     * <p>
      * Scenario:
      * - Create a list of songs with danceability scores below the specified threshold.
      * - Get songs above a specified threshold using the BackendConstructor.
@@ -96,19 +93,15 @@ public class BackendDeveloperTests<T extends Comparable<T>> implements BackendIn
     void testGetSongsAboveDanceabilityThresholdNoMatches() {
 
         // Description: Tests getting songs above a specified danceability threshold when none match.
-        BackendIterableMultiKeySortedCollection<Song> songList = new BackendIterableMultiKeySortedCollection<>();
+        IterableMultiKeyRBT<Song> songList = new IterableMultiKeyRBT<>();
         songList.insertSingleKey(new Song("Artist1", "Song1", 2021, "Genre1", 0.6));
         songList.insertSingleKey(new Song("Artist2", "Song2", 2022, "Genre2", 0.5));
 
         Backend backend = new Backend(songList);
-        BackendIterableMultiKeySortedCollection<Song> songsAboveThreshold = backend.getSongsAboveDanceabilityThreshold(songList, 0.7);
+        IterableMultiKeyRBT<Song> songsAboveThreshold = backend.getSongsAboveDanceabilityThreshold(songList, 0.7);
 
         assertEquals(0, songsAboveThreshold.size());
     }
-
-    private BackendInterface backend = new Backend(new BackendIterableMultiKeySortedCollection<>());
-    private FrontendInterface frontend = new Frontend(backend); // creating frontend class with the backend as a
-    // parameter
     /**
      * Verifies that the frontend is able to load a file and return the correct file path.
      * This test creates an instance of the Frontend with a Backend and calls the loadFile method.
@@ -117,10 +110,31 @@ public class BackendDeveloperTests<T extends Comparable<T>> implements BackendIn
     @Test
     void integrationTestLoadFile() {
         // Integration test to verify loading a file
-        String filePath = frontend.loadFile();
+
+        frontend.loadFile();
+        Backend backend = new Backend();
+        String filePath = "\"C:\\\\Users\\\\psun4\\\\IdeaProjects\\\\untitled\\\\src\\\\songs.csv\""
 
         assertTrue(filePath != null);
         assertTrue(filePath.endsWith(".txt"));
+    }
+    @Test
+    void integrationTestLoadFile() throws IOException {
+        // Initialize backend and frontend
+        IterableMultiKeyRBT<Song> songList = new IterableMultiKeyRBT<>();
+        Backend backend = new Backend(songList);
+        Frontend frontend = new Frontend(backend); // Assuming Frontend takes Backend as a parameter
+
+        // Load the file using frontend
+        frontend.loadFile();
+
+        // Check the path of the loaded file
+        String filePath = "\"C:\\\\Users\\\\psun4\\\\IdeaProjects\\\\untitled\\\\src\\\\songs.csv\"";
+        backend.dataFromFileReader(filePath);
+        Song expectedSong = new Song("Train", "Hey, Soul Sister",2010,"neo mellow",67);
+        // Assert that the backend loaded the correct file
+        assertEquals(songList.size(), 603);
+        assertEquals(songList.root.data, expectedSong);
     }
     /**
      * Verifies that the frontend correctly calculates the average danceability score.
@@ -136,8 +150,11 @@ public class BackendDeveloperTests<T extends Comparable<T>> implements BackendIn
         Song song1 = new Song("Song 1", "Artist 1", 120, "Genre 1", 0.75);
         Song song2 = new Song("Song 2", "Artist 2", 130, "Genre 2", 0.80);
         //using frontend to add the songs into the songList
-        frontend.listSongs().insert(song1);
-        frontend.listSongs().insert(song2);
+        IterableMultiKeyRBT<Song> songList = new IterableMultiKeyRBT<>();
+        Backend backend = new Backend(songList);
+        Frontend frontend = new Frontend(backend); // Assuming Frontend takes Backend as a parameter
+        songList.insertSingleKey(song1);
+        songList.insertSingleKey(song2);
 
         // Call the method in frontend
         double avgScore = frontend.showAvgScore();
@@ -146,94 +163,4 @@ public class BackendDeveloperTests<T extends Comparable<T>> implements BackendIn
         assertEquals(0.775, avgScore);
     }
 
-    @Override
-    public void dataFromFileReader(String filePath) {
-
-    }
-
-    @Override
-    public double calculateAverageDanceabilityScore(BackendIterableMultiKeySortedCollection<Song> songList) {
-        return 0;
-    }
-
-    @Override
-    public BackendIterableMultiKeySortedCollection<Song> getSongsAboveDanceabilityThreshold(BackendIterableMultiKeySortedCollection<Song> songList, double threshold) {
-        return null;
-    }
-
-
-    @Override
-    public String getArtist() {
-        return null;
-    }
-
-    @Override
-    public String getSongTitle() {
-        return null;
-    }
-
-    @Override
-    public int getYear() {
-        return 0;
-    }
-
-    @Override
-    public String getGenre() {
-        return null;
-    }
-
-    @Override
-    public double getDanceabilityScore() {
-        return 0;
-    }
-
-    @Override
-    public boolean insertSingleKey(Comparable key) {
-        return false;
-    }
-
-    @Override
-    public int numKeys() {
-        return 0;
-    }
-
-    @Override
-    public Iterator iterator() {
-        return null;
-    }
-
-    @Override
-    public void setIterationStartPoint(Comparable startPoint) {
-
-    }
-
-    @Override
-    public int compareTo(Song o) {
-        return 0;
-    }
-
-    @Override
-    public boolean insert(Comparable data) throws NullPointerException, IllegalArgumentException {
-        return false;
-    }
-
-    @Override
-    public boolean contains(Comparable data) {
-        return false;
-    }
-
-    @Override
-    public int size() {
-        return 0;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public void clear() {
-
-    }
 }

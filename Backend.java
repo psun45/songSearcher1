@@ -8,15 +8,15 @@ import java.util.List;
  * This class represents the backend logic for managing a collection of songs.
  * It implements both the BackendInterface and SongInterface.
  */
-public class Backend implements BackendInterface, SongInterface {
-    private BackendIterableMultiKeySortedCollection<Song> songList;
+public class Backend implements BackendInterface {
+    private IterableMultiKeyRBT<Song> songList;
 
     /**
      * Constructs a Backend object with the provided songList.
      *
      * @param songList The collection of songs to be managed by this backend.
      */
-    public Backend(BackendIterableMultiKeySortedCollection<Song> songList) {
+    public Backend(IterableMultiKeyRBT<Song> songList) {
         this.songList = songList;
     }
 
@@ -28,17 +28,56 @@ public class Backend implements BackendInterface, SongInterface {
      */
     @Override
     public void dataFromFileReader(String filePath) throws IOException {
-        //how to write the method dataFromFileReader so that the data is read from the file
         List<String> lines = Files.readAllLines(Paths.get(filePath));
 
+        for (int i = 1; i < lines.size(); i++) {  // starting from 1 to skip the header
+            try {
+                // Check if the line starts with a quote, indicating that the title is in quotes
+                if (lines.get(i).startsWith("\"")) {
+                    int closingQuoteIndex = lines.get(i).indexOf("\",");
+                    // Check if the line contains a closing quote
+                    if (closingQuoteIndex != -1) {
+                        String title = lines.get(i).substring(1, closingQuoteIndex);  // Extract title without quotes
+                        String restOfLine = lines.get(i).substring(closingQuoteIndex + 2);  // Extract data after title
+                        String[] songData = restOfLine.split(",");
+                        if(title.contains("\"\"")){
+                            title.replace("\"\"", "\"");
+                        }
+                        Song song = new Song(
+                                title,     // title
+                                songData[0].trim(),     // artist
+                                Integer.parseInt(songData[2].trim()),  // year
+                                songData[1].trim(),     // top genre
+                                Double.parseDouble(songData[5].trim()) // assuming danceability score is from the dnce column
+                        );
 
-        for (int i = 0; i < lines.size(); i++) {
-            String[] songData = lines.get(i).split(",");
-            Song song = new Song(songData[0], songData[1], Integer.parseInt(songData[2]),
-                    songData[3], Double.parseDouble(songData[4]));
-            songList.insert(song);
+                        songList.insertSingleKey(song);
+
+                    } else {
+                        System.out.println("Error parsing line " + i + ": Missing closing quote.");
+                    }
+                } else {
+                    // If the line does not start with a quote, the title is not in quotes
+                    String[] songData = lines.get(i).split(",");
+                    String title = songData[0].trim();
+                    if(title.contains("\"\"")){
+                        title.replace("\"\"", "\"");
+                    }
+                    Song song = new Song(
+                            title,     // title
+                            songData[1].trim(),     // artist
+                            Integer.parseInt(songData[3].trim()),  // year
+                            songData[2].trim(),     // top genre
+                            Double.parseDouble(songData[6].trim()) // assuming danceability score is from the dnce column
+                    );
+                    songList.insertSingleKey(song);
+                }
+
+            } catch (Exception e) {
+                System.out.println("Error parsing line " + i + ": " + lines.get(i));
+                e.printStackTrace();
+            }
         }
-
     }
 
     /**
@@ -49,16 +88,15 @@ public class Backend implements BackendInterface, SongInterface {
      * @throws ArithmeticException If the songList is empty.
      */
     @Override
-    public double calculateAverageDanceabilityScore(BackendIterableMultiKeySortedCollection<Song> songList)
+    public double calculateAverageDanceabilityScore(IterableMultiKeyRBT<Song> songList)
             throws ArithmeticException {
         double sum = 0;
         Iterator<Song> iterator = songList.iterator(); // Assuming you have an iterator method
-
+        // for the songList
         while (iterator.hasNext()) {
             Song song = iterator.next();
             sum += song.getDanceabilityScore();
         }
-
         return sum / songList.size();
     }
 
@@ -70,10 +108,10 @@ public class Backend implements BackendInterface, SongInterface {
      * @return A collection of songs with danceability scores above the threshold.
      */
     @Override
-    public BackendIterableMultiKeySortedCollection<Song> getSongsAboveDanceabilityThreshold(
-            BackendIterableMultiKeySortedCollection<Song> songList, double threshold) {
-        BackendIterableMultiKeySortedCollection<Song> songsAboveThreshold =
-                new BackendIterableMultiKeySortedCollection<>();
+    public IterableMultiKeyRBT<Song> getSongsAboveDanceabilityThreshold(
+            IterableMultiKeyRBT<Song> songList, double threshold) {
+        IterableMultiKeyRBT<Song> songsAboveThreshold =
+                new IterableMultiKeyRBT<>();
 
         Iterator<Song> iterator = songList.iterator(); // Iterator for the songList
 
@@ -87,79 +125,4 @@ public class Backend implements BackendInterface, SongInterface {
         return songsAboveThreshold;
     }
 
-    @Override
-    public boolean insertSingleKey(Comparable key) {
-        return false;
-    }
-
-    @Override
-    public int numKeys() {
-        return 0;
-    }
-
-    @Override
-    public Iterator iterator() {
-        return null;
-    }
-
-    @Override
-    public void setIterationStartPoint(Comparable startPoint) {
-
-    }
-
-
-    @Override
-    public boolean insert(Comparable data) throws NullPointerException, IllegalArgumentException {
-        return false;
-    }
-
-    @Override
-    public boolean contains(Comparable data) {
-        return false;
-    }
-
-    @Override
-    public int size() {
-        return 0;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public void clear() {
-
-    }
-
-    @Override
-    public String getArtist() {
-        return null;
-    }
-
-    @Override
-    public String getSongTitle() {
-        return null;
-    }
-
-    @Override
-    public int getYear() {
-        return 0;
-    }
-
-    @Override
-    public String getGenre() {
-        return null;
-    }
-
-    @Override
-    public double getDanceabilityScore() {
-        return 0;
-    }
-
-    @Override
-    public int compareTo(Song o) {
-        return 0;
-    }
 }
