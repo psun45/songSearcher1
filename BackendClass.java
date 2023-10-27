@@ -33,7 +33,7 @@ public class BackendClass implements BackendInterface {
     @Override
     public IterableMultiKeyRBT<Song> dataFromFileReader(String fileName) throws IOException {
         String filePath = fileName;
-        filePath = "." +  File.separator + "src"+File.separator +  fileName;
+        filePath = "." +  File.separator +  fileName;
         // List<String> lines = Files.readAllLines(Paths.get(filePath));
         File file = new File(filePath);
         Scanner scanner = new Scanner(file);
