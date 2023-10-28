@@ -14,6 +14,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,16 +64,16 @@ public class FrontendClass implements FrontendInterface {
         currentPlaylist = backend.dataFromFileReader(file);
         repeat = false;                                                                             // terminates the while loop
       }
-      
-      else if (!file.contains(".csv")) {                                                            // entered file doesn't end in csv
-        file = file.concat(".csv");
+
+      try {
         currentPlaylist = backend.dataFromFileReader(file);
         repeat = false;                                                                             // terminates the while loop
+      } catch (FileNotFoundException e) {
+        System.out.println("Please enter a valid file name");
+      } catch (IOException e) {
+        System.out.println("Error reading the file. Try again.");
       }
       
-      else {
-        System.out.println("please enter a file");                                                  // not acceptable type
-      }
     }
         
     System.out.println(file + " file loaded successfully");
