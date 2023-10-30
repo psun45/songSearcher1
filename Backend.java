@@ -1,49 +1,36 @@
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * This class represents the backend logic for managing a collection of songs.
  * It implements both the BackendInterface and SongInterface.
  */
-public class BackendClass implements BackendInterface {
-    public IterableMultiKeyRBT<Song> songList = null;
+public class Backend implements BackendInterface {
+    private IterableMultiKeyRBT<Song> songList;
 
     /**
      * Constructs a Backend object with the provided songList.
      *
      * @param songList The collection of songs to be managed by this backend.
      */
-    public BackendClass(IterableMultiKeyRBT<Song> songList) {
+    public Backend(IterableMultiKeyRBT<Song> songList) {
         this.songList = songList;
     }
 
     /**
      * Reads data from a file and populates the songList with Song objects.
      *
-     * @param fileName The path to the file containing song data.
-     * @return
+     * @param filePath The path to the file containing song data.
+     * @return 
      * @throws IOException If an I/O error occurs while reading the file.
      */
     @Override
-    public IterableMultiKeyRBT<Song> dataFromFileReader(String fileName) throws IOException {
-        String filePath = fileName;
-        filePath = "." +  File.separator +  fileName;
-        // List<String> lines = Files.readAllLines(Paths.get(filePath));
-        File file = new File(filePath);
-        Scanner scanner = new Scanner(file);
-        List<String> lines = new ArrayList<>();
+    public IterableMultiKeyRBT<Song> dataFromFileReader(String filePath) throws IOException {
+        List<String> lines = Files.readAllLines(Paths.get(filePath));
 
-        while (scanner.hasNextLine()) {
-            lines.add(scanner.nextLine());
-        }
-
-        scanner.close();
         for (int i = 1; i < lines.size(); i++) {  // starting from 1 to skip the header
             try {
                 // Check if the line starts with a quote, indicating that the title is in quotes
@@ -58,8 +45,8 @@ public class BackendClass implements BackendInterface {
                             title.replace("\"\"", "\"");
                         }
                         Song song = new Song(
-                                songData[0].trim(),     // artist
                                 title,     // title
+                                songData[0].trim(),     // artist
                                 Integer.parseInt(songData[2].trim()),  // year
                                 songData[1].trim(),     // top genre
                                 Double.parseDouble(songData[5].trim()) // assuming danceability score is from the dnce column
@@ -78,8 +65,8 @@ public class BackendClass implements BackendInterface {
                         title.replace("\"\"", "\"");
                     }
                     Song song = new Song(
-                            songData[1].trim(),     // artist
                             title,     // title
+                            songData[1].trim(),     // artist
                             Integer.parseInt(songData[3].trim()),  // year
                             songData[2].trim(),     // top genre
                             Double.parseDouble(songData[6].trim()) // assuming danceability score is from the dnce column
@@ -106,15 +93,13 @@ public class BackendClass implements BackendInterface {
     public double calculateAverageDanceabilityScore(IterableMultiKeyRBT<Song> songList)
             throws ArithmeticException {
         double sum = 0;
-        int numberOfSongs = 0;
         Iterator<Song> iterator = songList.iterator(); // Assuming you have an iterator method
         // for the songList
         while (iterator.hasNext()) {
             Song song = iterator.next();
             sum += song.getDanceabilityScore();
-            numberOfSongs++;
         }
-        return sum / numberOfSongs;
+        return sum / songList.size();
     }
 
     /**
@@ -140,13 +125,6 @@ public class BackendClass implements BackendInterface {
         }
 
         return songsAboveThreshold;
-    }
-
-    public static void main(String[] args) throws IOException {
-        IterableMultiKeyRBT<Song> songList = new IterableMultiKeyRBT<>();
-        BackendClass backend = new BackendClass(songList);
-        frontend frontend = new frontend();
-        frontend.mainLoop();
     }
 
 }

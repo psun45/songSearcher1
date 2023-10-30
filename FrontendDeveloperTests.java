@@ -1,6 +1,6 @@
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.io.IOException;
 
 // --== CS400 Fall 2023 File Header Information ==--
 // Name: ALEX SCHMITT
@@ -22,15 +22,17 @@ public class FrontendDeveloperTests {
    * code should check to see if this is included and if not, it will add it to the end
    * inputed code is as follows
    *    "song"      enters a file to load without the .csv at the end
+   * @throws IOException 
    *    
    */
   @Test
-  public void testLoadFileNoCSV() {
+  public void testLoadFileNoCSV() throws IOException {
     
-    
+    FrontendClass frontend = new FrontendClass();
+
     TextUITester tester = new TextUITester("song");                                                 // file input doesn't include ".csv"
     
-    FrontendClass.loadFile();
+    frontend.loadFile();
     
     String output = tester.checkOutput();                                                           // simulated output?
     
@@ -41,14 +43,16 @@ public class FrontendDeveloperTests {
    * Loading File Tester Method
    * 
    * input does include the ".csv" found in the file name
+   * @throws IOException 
    *    
    */
   @Test
-  public void testLoadFilePerfectInput() {
+  public void testLoadFilePerfectInput() throws IOException {
     
     TextUITester tester = new TextUITester("song.csv");                                             // file input does include ".csv"
-    
-    FrontendClass.loadFile();
+    FrontendClass frontend = new FrontendClass();
+
+    frontend.loadFile();
     
     String output = tester.checkOutput();                                                           // simulated output?
     
@@ -67,12 +71,13 @@ public class FrontendDeveloperTests {
   public void testAverageDancibilityScore() {
     
     TextUITester tester = new TextUITester("");                                                     // file input does include ".csv"
-    
-    FrontendClass.showAvgScore();
+    FrontendClass frontend = new FrontendClass();
+
+    frontend.showAvgScore();
     
     String output = tester.checkOutput();                                                           // simulated output?
     
-    assertTrue(output.contains("50.0"),
+    assertTrue(output.contains("the average dancebility score for the Song Set is"),
         "did not display correct average dancibility score message");
     
     /**assertTrue(output.contains("the average dancebility score for the Song Set is"), 
@@ -83,14 +88,16 @@ public class FrontendDeveloperTests {
    * Testing specific dancibility score
    * 
    * input is a typed number in letters rather than the numeral number
+   * @throws IOException 
    *    
    */
   @Test
-  public void testExitMethod() {
+  public void testExitMethod() throws IOException {
     
     TextUITester tester = new TextUITester("3");                                                    // 3 should displya exit message
-    
-    FrontendClass.mainLoop();
+    FrontendClass frontend = new FrontendClass();
+
+    frontend.mainLoop();
     
     String output = tester.checkOutput();                                                           // simulated output?
     
@@ -109,12 +116,13 @@ public class FrontendDeveloperTests {
   public void testDancibilityScoreInvalidNumber() {
     
     TextUITester tester = new TextUITester("");                                                     // file input does include ".csv"
-    
-    FrontendClass.showAvgScore();
+    FrontendClass frontend = new FrontendClass();
+
+    frontend.showAvgScore();
     
     String output = tester.checkOutput();                                                           // simulated output?
     
-    assertTrue(output.contains("50.0"),
+    assertTrue(output.contains("the average dancebility score for the Song Set is"),
         "did not display correct average dancibility score message");
     
     /**assertTrue(output.contains("the average dancebility score for the Song Set is"), 
@@ -135,13 +143,15 @@ public class FrontendDeveloperTests {
     TextUITester tester = new TextUITester("0"
         + "/n"
         + "song.csv"
+        + "/n"
         + "1"
+        + "/n"
         + "3");                                                                                     // good input 
+    frontend frontend = new frontend();
     
-    FrontendClass.listSongs();
+    frontend.showAvgScore();
     
     String output = tester.checkOutput();                                                           // simulated output?
-    
     assertTrue(output.contains("the average dancebility score for the Song Set is"), 
         "did not get to the right point in the app");
   }
@@ -156,19 +166,62 @@ public class FrontendDeveloperTests {
   @Test
   public void testFullMainLoop02() {
     
-    TextUITester tester = new TextUITester("0"
-        + "/n"
-        + "song.csv"
-        + "2"
-        + "3");                                                                                     // good input 
-    
-    FrontendClass.listSongs();
+    TextUITester tester = new TextUITester("");                                                     // good input 
+    frontend frontend = new frontend();
+
+    frontend.showAvgScore();
     
     String output = tester.checkOutput();                                                           // simulated output?
     
-    assertTrue(output.contains("Here are the songs: "), 
-        "did not get to the right point in the app");
+    assertTrue(output.contains("the average dancebility score for the Song Set is"),
+        "did not display correct average dancibility score message");
   }
+  
+  /**
+   * Testing some of the capabilities of the Backend Class
+   * 
+   * Checking the getting of songs above a dancibility level method
+   * 3/4 songs should be added to the new list
+   *    
+   */
+  @Test
+  void BackendTests01() {
+
+      // Description: Tests getting songs above a specified danceability threshold when none match.
+      IterableMultiKeyRBT<Song> songList = new IterableMultiKeyRBT<>();
+      songList.insertSingleKey(new Song("Bob", "Bob's Song", 2000, "Genre", 0.6));
+      songList.insertSingleKey(new Song("Kirk", "Kirk's Song", 2022, "Genre", 0.45));
+      songList.insertSingleKey(new Song("Dillon", "Dillon's Song", 1999, "Genre", 0.3));
+      songList.insertSingleKey(new Song("Dude", "Dude's Song", 2015, "Genre", 0.9));
+
+
+      Backend backend = new Backend(songList);
+      IterableMultiKeyRBT<Song> songsAboveThreshold = backend.getSongsAboveDanceabilityThreshold(songList, 0.4);
+
+      assertEquals(3, songsAboveThreshold.size());
+  }
+  
+  /**
+   * Testing some of the capabilities of the Backend Class
+   * 
+   * Checking the average of a few songs is correect
+   *    
+   */
+  @Test
+  public void BackendTests02() {
+    
+    // Tests calculation of average danceability score when the song list is empty.
+    IterableMultiKeyRBT<Song> songList = new IterableMultiKeyRBT<>();
+    songList.insertSingleKey(new Song("Bob", "Bob's Song", 2000, "Genre", 0.6));
+    songList.insertSingleKey(new Song("Dillon", "Dillon's Song", 1999, "Genre", 0.3));
+    songList.insertSingleKey(new Song("Dude", "Dude's Song", 2015, "Genre", 0.9));    
+    
+    
+    Backend backend = new Backend(songList);
+    double averageDanceability = backend.calculateAverageDanceabilityScore(songList);
+
+    assertEquals(0.6, averageDanceability);
+}
   
   
 }

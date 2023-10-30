@@ -1,4 +1,6 @@
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Iterator;
+import org.junit.jupiter.api.Test;
 
 /**
  * This interfaces extends the SortedCollectionInterface to allow storing multiple values for a single key,
@@ -10,7 +12,7 @@ public interface IterableMultiKeySortedCollectionInterface<T extends Comparable<
      * Inserts value into tree that can store multiple objects per key by keeping
      * lists of objects in each node of the tree.
      * @param key object to insert
-     * @return true if obj was inserted
+     * @return true if a new node was inserted, false if the key was added into an existing node
      */
     public boolean insertSingleKey(T key);
 
@@ -31,5 +33,4 @@ public interface IterableMultiKeySortedCollectionInterface<T extends Comparable<
      * @param startPoint the start point to set for iterations
      */
     public void setIterationStartPoint(Comparable<T> startPoint);
-
 }

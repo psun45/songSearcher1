@@ -77,8 +77,6 @@ public interface FrontendInterface {
    * loop is broken down into separate sub menu methods below this method.
    */
   public static void mainLoop() {
-    System.out.println("Welcome to the Song Searcher app!!!");
-    
-  };
+  }
 
 }
